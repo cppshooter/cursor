@@ -77,6 +77,37 @@ python3 sync_actual_with_expected.py 系统测试用例.docx --tables 1,2,4
 python3 sync_actual_with_expected.py 系统测试用例.docx --dry-run
 ```
 
+## generate_reports.py（无需 API）
+
+读取《问题.csv》中的每条记录，按照《问题报告.docx》和《问题处理报告.docx》
+模板，逐条生成对应的「问题报告」和「问题处理报告」。
+
+特性（与需求一一对应）：
+
+1. **字段一一对照**：CSV 表头（问题编号、问题描述、测试用例名称、模块名称、
+   重现步骤 / 处理措施和结果、测试人员、测试日期）与模板表格中的字段名称一一
+   对应，按名称定位字段名右侧紧邻的「值单元格」后写入；
+2. **不修改 Word 模板表格格式**：以模板为基础另存为新文件，仅向空白值单元格
+   写入文本，复用单元格原有段落并沿用字段名单元格的字体 run 格式（字体、字号、
+   加粗等），不增删行列、不改变合并关系、不调整列宽与样式；
+3. 模板中已固定的字段（问题级别=一般、测试类型=动态测试）保持原样不动；
+4. CSV 自动识别 GBK / UTF-8 编码；输出文件名包含问题编号，便于区分多条记录。
+
+用法：
+
+```bash
+# 默认读取 问题.csv，使用 问题报告.docx / 问题处理报告.docx 模板，
+# 在 输出报告/ 目录下逐条生成两份报告
+python3 generate_reports.py
+
+# 自定义输入与输出目录
+python3 generate_reports.py \
+    --csv 问题.csv \
+    --problem-template 问题报告.docx \
+    --handle-template 问题处理报告.docx \
+    --outdir 输出报告
+```
+
 ## fill_actual_results.py
 
 仅依据每一步的“操作过程及数据”和“预期结果”重写“实际结果”列。
