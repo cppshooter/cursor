@@ -49,7 +49,7 @@ knowledge:
 ## 三、输入/输出契约
 
 - **Input Sources:**
-  - `.agent/task/architecture-order.md` → 任务范围、标书类型
+  - `.agent/task/architecture-order.md` → 任务范围、技术方案类型
   - `analysis/requirement-analysis.md`、`analysis/scoring-checklist.md` → 技术要求与评分点
 - **Output Artifacts:**
   - `architecture/overall-design.md` → 总体技术架构方案（含设计说明 + 决策映射表）

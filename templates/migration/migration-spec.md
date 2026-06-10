@@ -9,7 +9,7 @@
 |--------|--------|
 | project_name | 标题 + 元信息.项目名称 |
 | tender_no | 元信息.招标编号 |
-| bid_type | 元信息.标书类型 |
+| bid_type | 元信息.技术方案类型 |
 | threshold | 评分闭环配置.score_threshold |
 
 ### analysis/*.yaml → analysis/*.md（参考 analysis.md.template）

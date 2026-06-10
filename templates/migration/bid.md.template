@@ -2,7 +2,7 @@
 
 ## 元信息
 - **skill_version:** 2.0
-- **标书类型：** {bid_type}
+- **技术方案类型：** {bid_type}
 - **招标编号：** {tender_no}
 - **项目名称：** {project_full_name}
 - **状态：** 迁移中
