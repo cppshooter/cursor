@@ -1,0 +1,16 @@
+# {project_name}
+
+## 元信息
+- **skill_version:** 2.0
+- **标书类型：** {bid_type}
+- **招标编号：** {tender_no}
+- **项目名称：** {project_full_name}
+- **状态：** 迁移中
+
+## 评分闭环配置
+- **score_threshold:** {threshold}
+- **max_rewrite:** 3
+
+## 进度索引
+- **已定稿章节：**
+- **最新评分：**

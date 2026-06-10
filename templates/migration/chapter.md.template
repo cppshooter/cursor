@@ -1,0 +1,19 @@
+---
+chapter: {chapter}
+slug: {slug}
+title: {title}
+status: {status}
+bid_type: {bid_type}
+---
+
+## 承接评分点
+| 评分点 | 分值 | 应答要求 |
+|--------|------|---------|
+| {point} | {score} | {require} |
+
+## 本章范围
+- 写什么：{scope}
+- 不写什么：{out_of_scope}
+
+## 引用依据
+- {references}
