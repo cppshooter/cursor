@@ -49,6 +49,15 @@ compose       → 合成定稿技术章节 → output/technical-proposal.md
 archive       → updater 归档 + RLHF 记忆沉淀
 ```
 
+## 两张独立交付表格
+
+系统在 analysis 阶段**独立生成**、并贯穿全流程维护两张关键表格，最终作为附表随技术方案交付：
+
+| 表格 | 文件 | 生成 | 维护/回填 | 交付 |
+|------|------|------|----------|------|
+| **技术部分评分索引表** | `analysis/scoring-checklist.md` | analyst 拆"评分表-技术部分" | updater 归档回填应答位置/状态（点对点应答对照索引） | compose 入 technical-proposal.md 附表 |
+| **技术偏离表** | `analysis/deviation-table.md` | analyst 据技术任务书/实质性要求生成空表 | writer 逐条应答、reviewer 核对 | compose 入 technical-proposal.md 附表 |
+
 ## 自动技术评标系统
 
 `expert`（技术评标专家）模拟技术评标专家组：方案/产品/实施三类技术评委**仅按招标"评分表-技术部分"**独立逐点打分，分歧互相质询后取共识分，输出技术评分表。`bid-agent` 比对 `bid.md` 中的 `score_threshold`（默认 85），低于阈值自动回退 `drafting`，把失分项与改进建议写入重写 order，最多 `max_rewrite`（默认 3）轮。

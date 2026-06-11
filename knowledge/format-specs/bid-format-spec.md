@@ -37,5 +37,7 @@
 - 按 `analysis/outline.md`（技术方案大纲）顺序拼接 `sections/*.md`
 - 自动生成目录
 - 嵌入 `architecture/diagrams/` 图（Mermaid 代码块或渲染图引用）
+- **附"技术部分评分应答索引表"**：取 `analysis/scoring-checklist.md` 终态（应答位置/状态已回填），作为技术方案附表置于正文之后，方便评委按图索骥定位每个技术评分点的应答位置
+- **附"技术偏离表"**：取 `analysis/deviation-table.md` 终态（已逐条应答），作为技术方案附表（硬件/集成类必附）
 - 输出到 `output/technical-proposal.md`
 - 保留所有 `【待提供：...】` 占位并在文末汇总待补技术清单

@@ -62,8 +62,9 @@ scoring 阶段拿到 `review/scoring-report.md` 后：
 1. 读 analysis/outline.md 获取技术章节顺序
 2. 按大纲顺序拼接 sections/*.md，加封面/目录/页眉信息（取自 bid.md 与 analysis，仅技术）
 3. 嵌入 architecture/diagrams/ 的图（Mermaid 代码块或渲染图引用）
-4. 写入 output/technical-proposal.md
-5. phase = archive
+4. 附"技术部分评分应答索引表"（取 analysis/scoring-checklist.md 终态）+ "技术偏离表"（取 analysis/deviation-table.md 终态）作为技术方案附表
+5. 写入 output/technical-proposal.md
+6. phase = archive
 ```
 
 ## 写 order 文件的规则

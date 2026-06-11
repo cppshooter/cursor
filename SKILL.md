@@ -70,14 +70,14 @@ python tools/init.py [project-path] [--type <编号>]
 
 ```
 intake        → 作者上传招标文件到 tender/
-analysis      → analyst 解析技术部分：技术需求分析报告 + 技术方案大纲 + 技术评分点清单 + 实质性技术否决项 + 技术偏离表
+analysis      → analyst 解析技术部分：技术需求分析报告 + 技术方案大纲 + 技术部分评分索引表 + 实质性技术否决项 + 技术偏离表
 architecture  → architect 设计总体技术架构（拓扑图/云架构/系统功能模块，Mermaid 出图）
 drafting      → 每章：retriever 找技术素材 → writer（按类型）写技术方案章节
 review        → reviewer 全文技术审查，输出风险评估报告 + 修改意见，反馈给 writer
 scoring       → expert 模拟技术评标专家组打分（仅技术），输出评分表 + 改进建议
                 ├─ 分数 ≥ 阈值 → 进入 compose
                 └─ 分数 < 阈值 → 回到 drafting 触发重写（带改进建议）
-compose       → 合成所有定稿技术章节 → output/technical-proposal.md
+compose       → 合成所有定稿技术章节 + 附"技术部分评分应答索引表"与"技术偏离表"终态 → output/technical-proposal.md
 archive       → updater 归档 + 把作者反馈沉淀为记忆（RLHF）
 ```
 
@@ -140,9 +140,9 @@ python tools/init.py [project-path] [--type <编号>]
 │   └── *.pdf / *.docx / *.md
 ├── analysis/                    # 分析员产出（仅技术）
 │   ├── requirement-analysis.md  # 技术需求分析报告
-│   ├── scoring-checklist.md     # 技术评分点清单（点对点应答台账）
+│   ├── scoring-checklist.md     # ★ 技术部分评分索引表（点对点应答台账，独立成表）
 │   ├── disqualification.md      # 实质性技术否决项清单
-│   ├── deviation-table.md       # 技术偏离表
+│   ├── deviation-table.md       # ★ 技术偏离表（独立成表）
 │   └── outline.md               # 技术方案大纲
 ├── architecture/                # 架构师产出
 │   ├── overall-design.md        # 总体技术架构方案
@@ -192,6 +192,15 @@ bid-agent（总指挥）
 - **只编写技术方案**，编写与评分依据仅取：评分表-技术部分、实质性要求-技术产品部分、技术任务书/采购需求技术部分
 - **不编写**商务、报价、付款、资质业绩、投标函等非技术内容（招标要求在技术方案内附技术性承诺/技术文件的除外）
 - expert 评分**只评技术**，不含价格分、商务分
+
+## 两张独立交付表格
+
+系统在 analysis 阶段独立生成、并贯穿全流程维护两张关键表格，最终作为附表随技术方案交付：
+
+| 表格 | 文件 | 生成 | 维护/回填 | 交付 |
+|------|------|------|----------|------|
+| **技术部分评分索引表** | `analysis/scoring-checklist.md` | analyst 拆评分表-技术部分（评分点→分值→应答要求→承接章节） | updater 归档时回填"应答位置/状态"（依据 writer 正文应答标记）→ 点对点应答对照索引 | compose 作为附表入 technical-proposal.md |
+| **技术偏离表** | `analysis/deviation-table.md` | analyst 据技术任务书/实质性要求-技术产品部分生成待应答空表 | writer 逐条应答（正/无/负偏离），reviewer 核对完整性 | compose 作为附表入 technical-proposal.md（硬件/集成类必附） |
 
 ## 多技术评委互评与 AutoGen（可选增强）
 

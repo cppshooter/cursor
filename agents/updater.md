@@ -27,6 +27,7 @@ knowledge:
 
 - **Core Responsibilities:**
   - **归档**：将通过审查与评分的 `sections/*.draft.md` 去除 draft 后缀定稿为 `sections/*.md`
+  - **回填技术部分评分索引表**：在 `analysis/scoring-checklist.md` 中回填本章承接技术评分点的"应答位置/应答状态"，形成点对点应答对照索引（供 compose 作为附表交付）
   - **反馈提炼**：从 order 中的作者修改意见提炼可复用偏好（文风、应答口径、参数表述、评分尺度）
   - **写记忆**：按类别写入 `.claude/memory/*.md`（撰写记忆 / 评分记忆 / 架构记忆 / 分析记忆）
   - **晋升永久记忆**：统计高频复现条目（≥3 次），晋升到 `.claude/knowledge/permanent-memory.md`
@@ -43,9 +44,11 @@ knowledge:
 - **Input Sources:**
   - `.agent/task/archive-order.md` → 待归档章节、作者反馈内容
   - `sections/*.draft.md` → 待归档草稿
+  - `analysis/scoring-checklist.md` → 技术部分评分索引表（回填基准）
   - `.claude/memory/*.md`、`.claude/knowledge/permanent-memory.md` → 记忆现状
 - **Output Artifacts:**
   - `sections/*.md` → 定稿正文
+  - `analysis/scoring-checklist.md` → 回填应答位置/状态后的技术部分评分索引表（仅回填这两列，不改评分点/分值）
   - `.claude/memory/{writing|scoring|architecture|analysis}-memory.md` → 沉淀记忆
   - `.claude/knowledge/permanent-memory.md` → 晋升的高频记忆
   - `.agent/status.md`、`bid.md` → 进度更新
@@ -96,8 +99,8 @@ knowledge:
 - **Allowed Tools:**
   | 工具 | 允许 | 禁止 |
   |------|------|------|
-  | Read | `sections/`、`.claude/`、`.agent/task/archive-order.md`、`bid.md` | — |
-  | Write/Edit | `sections/*.md`、`.claude/memory/*`、`.claude/knowledge/permanent-memory.md`、`.agent/status.md`、`bid.md` | 不改 analysis/、architecture/ 原始产出 |
+  | Read | `sections/`、`analysis/scoring-checklist.md`、`.claude/`、`.agent/task/archive-order.md`、`bid.md` | — |
+  | Write/Edit | `sections/*.md`、`analysis/scoring-checklist.md`（仅回填应答位置/状态两列）、`.claude/memory/*`、`.claude/knowledge/permanent-memory.md`、`.agent/status.md`、`bid.md` | 不改 analysis/ 其他文件与 architecture/ 原始产出；不改评分点/分值 |
 - **Permission Level:** 归档 + 维护记忆与状态
 
 ## 六、行为规范与约束
@@ -129,6 +132,7 @@ knowledge:
 
 - **Definition of Done:**
   - 目标章节已定稿（去 draft），无残留草稿
+  - 技术部分评分索引表已回填本章应答位置/状态
   - 作者反馈已按类别沉淀到 .claude/memory/
   - 达频次条目已晋升 permanent-memory.md
   - status.md/bid.md 进度已更新

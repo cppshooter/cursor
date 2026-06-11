@@ -98,7 +98,7 @@ knowledge:
     │                   ├── ≥ 阈值 → phase=compose
     │                   └── < 阈值 且 rewrite_round < max_rewrite → 回退 drafting（带改进建议）
     │                   └── < 阈值 且 rewrite_round ≥ max_rewrite → 提请作者介入
-    ├── compose      → 自己合成 sections/*.md → output/technical-proposal.md
+    ├── compose      → 自己合成 sections/*.md + 附"技术部分评分应答索引表"与"技术偏离表"终态 → output/technical-proposal.md
     └── archive      → sub: updater（归档 + RLHF 记忆沉淀）
 
     判断："这件事该谁做？"

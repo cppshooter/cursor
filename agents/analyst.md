@@ -35,7 +35,7 @@ knowledge:
 
 - **Core Responsibilities:**
   - 提取技术概况：招标编号、项目名称、技术方案类型（软件/硬件/集成/服务）、技术任务书位置
-  - 拆解**评分表-技术部分**为**点对点技术应答台账**：每个技术评分点 → 分值 → 应答要求 → 承接技术章节 → 应答状态
+  - 拆解**评分表-技术部分**为**技术部分评分索引表**（点对点技术应答台账）：每个技术评分点 → 分值 → 应答要求 → 承接技术章节（索引）→ 应答位置/状态（撰写后回填）
   - 梳理**实质性要求-技术产品部分**为**技术否决项清单**：逐条列出触发否决的技术情形，标注红线等级
   - 整理**技术偏离表要求**：技术规格条目 + 偏离判定口径（正/无/负偏离）
   - 生成**技术方案大纲**：对齐技术评分点与技术任务书要求的章节目录
@@ -57,9 +57,9 @@ knowledge:
   - `tender/*`（招标文件原文）→ **仅取评分表-技术部分、实质性要求-技术产品部分、技术任务书/采购需求技术部分**
 - **Output Artifacts:**
   - `analysis/requirement-analysis.md` → 技术需求分析报告
-  - `analysis/scoring-checklist.md` → 点对点技术评分台账
+  - `analysis/scoring-checklist.md` → **技术部分评分索引表**（点对点技术评分台账，含承接章节索引）
   - `analysis/disqualification.md` → 实质性技术否决项清单
-  - `analysis/deviation-table.md` → 技术偏离表（待应答空表 + 要求口径）
+  - `analysis/deviation-table.md` → **技术偏离表**（待应答空表 + 要求口径）
   - `analysis/outline.md` → 技术方案大纲
 - **Hand-off Protocol:** 五份产出写入 analysis/ 后，清理 analysis-order.md 并结束；bid-agent 检测到清理即推进 architecture
 
