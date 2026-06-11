@@ -61,13 +61,6 @@ if (
     exit 1
 }
 
-# 创建技能目录，已存在则清空
-if (Test-Path -LiteralPath $Dest) {
-    Remove-Item -LiteralPath $Dest -Recurse -Force
-}
-New-Item -ItemType Directory -Path $Dest -Force | Out-Null
-
-# 只复制运行时需要的文件
 $RuntimeItems = @(
     "SKILL.md",
     "agents",
@@ -78,13 +71,24 @@ $RuntimeItems = @(
     "tools"
 )
 
+# 校验安装源完整性，避免删除旧安装后才发现源文件缺失
 foreach ($Item in $RuntimeItems) {
     $Source = Join-Path $ScriptDir $Item
     if (-not (Test-Path -LiteralPath $Source)) {
         Write-Error "错误：缺少安装源文件或目录: $Source"
         exit 1
     }
+}
 
+# 创建技能目录，已存在则清空
+if (Test-Path -LiteralPath $Dest) {
+    Remove-Item -LiteralPath $Dest -Recurse -Force
+}
+New-Item -ItemType Directory -Path $Dest -Force | Out-Null
+
+# 只复制运行时需要的文件
+foreach ($Item in $RuntimeItems) {
+    $Source = Join-Path $ScriptDir $Item
     Copy-Item -LiteralPath $Source -Destination $Dest -Recurse -Force
 }
 
