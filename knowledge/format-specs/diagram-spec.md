@@ -54,6 +54,88 @@ graph TD
   M2 --> MQ[消息队列]
 ```
 
+## 三·补、软件类总体架构四图（软件开发类必含）
+
+软件开发类技术方案的"系统总体技术架构"必须包含以下四图（缺一视为设计不完整）：
+
+### 1. 逻辑分层图（graph TB）
+
+表现层/应用层/服务层/数据层逻辑分层与各层职责：
+```mermaid
+graph TB
+  subgraph L1[表现层]
+    UI[Web/移动端 UI]
+  end
+  subgraph L2[应用层]
+    API[API网关] --> BFF[聚合服务]
+  end
+  subgraph L3[服务层]
+    S1[业务服务A] 
+    S2[业务服务B]
+  end
+  subgraph L4[数据层]
+    DB[(数据库)]
+    CACHE[(缓存)]
+  end
+  UI --> API
+  BFF --> S1 --> DB
+  BFF --> S2 --> CACHE
+```
+
+### 2. 数据主流向图（flowchart LR）
+
+核心业务数据 产生→处理→存储→消费 的主流向：
+```mermaid
+flowchart LR
+  SRC[数据产生/采集] --> ETL[校验/处理]
+  ETL --> STORE[(主存储)]
+  STORE --> ANA[分析/计算]
+  ANA --> CONS[消费:报表/接口/前端]
+  STORE -. 同步 .-> DW[(数据仓库)]
+```
+
+### 3. 组件图（graph LR）
+
+主要组件（服务/模块/中间件）及依赖调用关系：
+```mermaid
+graph LR
+  GW[API网关] --> AUTH[认证组件]
+  GW --> ORD[订单组件]
+  GW --> USR[用户组件]
+  ORD --> MQ[[消息队列]]
+  ORD --> ODB[(订单库)]
+  USR --> UDB[(用户库)]
+  ORD -. 调用 .-> USR
+```
+
+### 4. 部署图（graph TB）
+
+物理/云部署拓扑：节点、网络、中间件、数据库部署与高可用：
+```mermaid
+graph TB
+  subgraph Client[客户端]
+    B[浏览器/App]
+  end
+  subgraph DMZ[DMZ]
+    LB[负载均衡]
+  end
+  subgraph AppZone[应用区·双节点]
+    N1[应用节点1] 
+    N2[应用节点2]
+  end
+  subgraph DataZone[数据区]
+    DBm[(数据库主)] -. 主备 .-> DBs[(数据库备)]
+    RDS[(缓存集群)]
+  end
+  B --> LB --> N1
+  LB --> N2
+  N1 --> DBm
+  N2 --> DBm
+  N1 --> RDS
+```
+
+> 类图可用 `classDiagram`，用于功能模块的"类与算法设计"；用例可用 `graph`/`flowchart` 表达用例关系或参与者-用例图。
+
 ## 四、流程时序图（sequenceDiagram）
 
 关键业务/服务响应流程：
@@ -83,6 +165,23 @@ gantt
   section 验收
   试运行   :a5, after a4, 20d
   竣工验收 :a6, after a5, 5d
+```
+
+## 六、类图（classDiagram，功能模块"类与算法设计"用）
+
+```mermaid
+classDiagram
+  class OrderService {
+    +createOrder(req) Order
+    +cancel(id) bool
+    -validate(req) bool
+  }
+  class Order {
+    +id: string
+    +status: string
+    +items: Item[]
+  }
+  OrderService --> Order : 创建/管理
 ```
 
 ## 规范要点

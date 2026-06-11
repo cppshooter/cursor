@@ -37,9 +37,11 @@ Step 6: 验证（图文一致、语法可解析、评分点覆盖）
 
 每层写明：组件、选型理由、与招标要求的对应、冗余/高可用/容灾/弹性设计。
 
-## Step 3: 三张核心图 → `architecture/diagrams/*.mmd`
+## Step 3: 核心图 → `architecture/diagrams/*.mmd`
 
-遵循 `diagram-spec.md`。至少产出：
+遵循 `diagram-spec.md`。**软件开发类**：系统总体技术架构**必须产出四图**——逻辑分层图（layering.mmd）、数据主流向图（dataflow.mmd）、组件图（component.mmd）、部署图（deployment.mmd），缺一视为设计不完整。**硬件/集成/服务类**：至少产出下列通用三图（按需）。
+
+通用核心图（至少产出）：
 
 **网络拓扑图（topology.mmd）** — 安全域、链路、冗余：
 ```mermaid
@@ -103,7 +105,8 @@ mmdc -i architecture/diagrams/topology.mmd -o architecture/diagrams/topology.png
 ## Step 6: 验证（Definition of Done）
 
 - [ ] overall-design.md 含：设计目标、分层架构、关键选型、冗余/容灾/弹性、决策映射表
-- [ ] diagrams/ ≥ 3 张核心图（拓扑/云架构/功能模块），Mermaid 语法可解析
+- [ ] **软件开发类：diagrams/ 必含四图——逻辑分层图、数据主流向图、组件图、部署图**（缺一不可）
+- [ ] 其他类型：diagrams/ ≥ 3 张核心图（拓扑/云架构/功能模块），Mermaid 语法可解析
 - [ ] 图文一致（文字描述的组件都在图里，反之亦然）
 - [ ] 技术类评分点 100% 被架构覆盖（在决策映射表可查）
 - [ ] 无超预算/招标禁止的技术选型
