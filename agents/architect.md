@@ -49,7 +49,7 @@ knowledge:
 ## 三、输入/输出契约
 
 - **Input Sources:**
-  - `.agent/task/architecture-order.md` → 任务范围、标书类型
+  - `.agent/task/architecture-order.md` → 任务范围、技术方案类型
   - `analysis/requirement-analysis.md`、`analysis/scoring-checklist.md` → 技术要求与评分点
 - **Output Artifacts:**
   - `architecture/overall-design.md` → 总体技术架构方案（含设计说明 + 决策映射表）
@@ -120,7 +120,8 @@ knowledge:
   - 不画与正文无关的炫技图
   - 不引入招标明确禁止或超预算的技术选型
 - **Quality Gates:**
-  - 至少包含：1 张网络拓扑图 + 1 张云/部署架构图 + 1 张系统功能模块图
+  - **软件开发类必含四图**：逻辑分层图、数据主流向图、组件图、部署图（缺一视为设计不完整）
+  - 其他类型至少包含：1 张网络拓扑图 + 1 张云/部署架构图 + 1 张系统功能模块图
   - 决策映射表覆盖全部技术类评分点
   - Mermaid 源码语法正确
 - **Communication Style:** 方案说明结构化（设计目标→方案→论证→映射）
@@ -137,7 +138,7 @@ knowledge:
 
 - **Definition of Done:**
   - overall-design.md 含：设计目标、分层架构、关键技术选型、冗余/容灾/弹性设计、决策映射表
-  - diagrams/ 含至少 3 张核心图（拓扑/云架构/功能模块），Mermaid 可解析
+  - diagrams/：软件开发类必含四图（逻辑分层/数据主流向/组件图/部署图）；其他类型 ≥ 3 张核心图（拓扑/云架构/功能模块），Mermaid 可解析
 - **Output Validation:** bid-agent 抽查技术评分点是否被架构覆盖
 
 ## 九、上下文与状态管理

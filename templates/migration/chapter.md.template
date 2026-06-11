@@ -3,12 +3,12 @@ chapter: {chapter}
 slug: {slug}
 title: {title}
 status: {status}
-bid_type: {bid_type}
+bid_type: {bid_type}   # software / hardware / integration / service
 ---
 
-## 承接评分点
-| 评分点 | 分值 | 应答要求 |
-|--------|------|---------|
+## 承接技术评分点
+| 技术评分点 | 分值 | 应答要求 |
+|-----------|------|---------|
 | {point} | {score} | {require} |
 
 ## 本章范围

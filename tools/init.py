@@ -4,10 +4,10 @@ awesome-bid-skill 项目初始化工具
 
 用法: python init.py [project-path] [--type <编号>]
 
-从 skill 仓库复制 agent 定义、标书类型知识、案例库、反 AI 规则到用户项目目录，
-创建完整的投标书编写项目骨架。
+从 skill 仓库复制 agent 定义、技术方案类型知识、案例库、反 AI 规则到用户项目目录，
+创建完整的"技术方案"编写项目骨架。
 
-标书类型编号: 1=服务类 2=采购类 3=工程类 4=综合类
+技术方案类型编号: 1=软件开发 2=硬件开发 3=系统集成 4=服务
 
 不带参数时默认在当前目录初始化。
 """
@@ -25,12 +25,12 @@ for s in (sys.stdin, sys.stdout, sys.stderr):
         pass
 
 
-BID_TYPES = ["service", "procurement", "engineering", "comprehensive"]
+BID_TYPES = ["software", "hardware", "integration", "service"]
 BID_TYPE_CN = {
-    "service": "服务类",
-    "procurement": "采购类",
-    "engineering": "工程类",
-    "comprehensive": "综合类",
+    "software": "软件开发",
+    "hardware": "硬件开发",
+    "integration": "系统集成",
+    "service": "服务",
 }
 
 SKILL_HOME = Path(os.environ.get("BID_SKILL_HOME", Path(__file__).parent.parent))
@@ -64,7 +64,7 @@ def main():
             try:
                 bid_type = BID_TYPES[int(sys.argv[idx + 1]) - 1]
             except (IndexError, ValueError):
-                print(f"无效标书类型编号，可选 1-{len(BID_TYPES)}")
+                print(f"无效技术方案类型编号，可选 1-{len(BID_TYPES)}")
                 sys.exit(1)
 
     # 安全检查：禁止在技能仓库目录内初始化
@@ -78,14 +78,14 @@ def main():
     else:
         project_path.mkdir(parents=True)
 
-    print(f"初始化投标书项目: {project_path}")
+    print(f"初始化技术方案项目: {project_path}")
     print(f"技能仓库: {SKILL_HOME}")
 
-    # Step 1: 选标书类型
+    # Step 1: 选技术方案类型
     if bid_type is None:
         bid_type = select_bid_type()
     else:
-        print(f"标书类型: {bid_type}（{BID_TYPE_CN[bid_type]}）")
+        print(f"技术方案类型: {bid_type}（{BID_TYPE_CN[bid_type]}）")
 
     # Step 2: 创建骨架
     create_skeleton(project_path)
@@ -113,18 +113,18 @@ def main():
 
     print("\n初始化完成!")
     print(f"项目路径: {project_path}")
-    print("把招标文件放入 tender/ 目录，然后输入 @bid-agent 开始编写")
+    print("把招标文件放入 tender/ 目录，然后输入 @bid-agent 开始编写技术方案")
 
 
 def select_bid_type() -> str:
-    """交互式选标书类型"""
-    print("\n可选标书类型:")
+    """交互式选技术方案类型"""
+    print("\n可选技术方案类型:")
     for i, t in enumerate(BID_TYPES, 1):
         print(f"  {i}. {t}（{BID_TYPE_CN[t]}）")
 
     while True:
         try:
-            choice = input("\n选择标书类型编号: ").strip()
+            choice = input("\n选择技术方案类型编号: ").strip()
             idx = int(choice) - 1
             if 0 <= idx < len(BID_TYPES):
                 return BID_TYPES[idx]
@@ -185,7 +185,7 @@ def deploy_agents(project_path: Path):
 def deploy_anti_ai(project_path: Path, bid_type: str):
     """按类型合成反 AI 规则到 .claude/knowledge/anti-ai.md"""
     knowledge_dir = project_path / ".claude" / "knowledge"
-    parts = ["# 反 AI 味与公文文风规则\n\n[community-defaults]\n"]
+    parts = ["# 反 AI 味与技术文风规则\n\n[community-defaults]\n"]
 
     common = SOURCE_ANTI_AI / "common-rules.md"
     if common.exists():
@@ -193,7 +193,7 @@ def deploy_anti_ai(project_path: Path, bid_type: str):
 
     type_rules = SOURCE_ANTI_AI / f"{bid_type}.md"
     if type_rules.exists():
-        parts.append(f"\n[community-defaults] 标书类型: {bid_type}\n")
+        parts.append(f"\n[community-defaults] 技术方案类型: {bid_type}\n")
         parts.append(type_rules.read_text(encoding="utf-8"))
 
     (knowledge_dir / "anti-ai.md").write_text("\n".join(parts), encoding="utf-8")
@@ -216,7 +216,7 @@ def deploy_knowledge(project_path: Path, bid_type: str):
     if type_src.exists():
         shutil.copy2(type_src, knowledge_dir / "bid-type.md")
         count += 1
-        print(f"  ✅ 已继承标书类型要点 ({bid_type})")
+        print(f"  ✅ 已继承技术方案类型要点 ({bid_type})")
 
     # 案例库：通用 + 类型
     case_parts = ["# 案例库\n"]
@@ -230,7 +230,7 @@ def deploy_knowledge(project_path: Path, bid_type: str):
         "\n".join(case_parts), encoding="utf-8"
     )
     count += 1
-    print("  ✅ 已继承案例库 (通用 + 类型，示范脱敏，建议导入真实历史标书)")
+    print("  ✅ 已继承案例库 (通用 + 类型，仅技术素材，示范脱敏，建议导入真实历史技术方案)")
 
     # 永久记忆占位
     permanent = knowledge_dir / "permanent-memory.md"
@@ -251,21 +251,23 @@ def write_claude_md(project_path: Path):
 
 ## AI 指引
 
-本投标项目的编写流程由 8 个 agent 协作完成，定义在 `.claude/agents/` 下。
+本项目**只编写技术方案**，流程由 8 个 agent 协作完成，定义在 `.claude/agents/` 下。
+编写依据只取招标文件的：评分表-技术部分、实质性要求-技术产品部分、技术任务书/采购需求技术部分。
+不涉及商务、报价、资质业绩等内容。
 
 **开始编写：** 把招标文件放入 `tender/`，然后输入 `@bid-agent` 进入工作流。
 
 **项目结构：**
-- `bid.md` — 项目索引 + 大纲 + 评分阈值配置
+- `bid.md` — 项目索引 + 技术方案大纲 + 技术评分阈值配置
 - `tender/` — 招标文件原文（作者上传）
-- `analysis/` — 需求分析报告、评分台账、废标清单、技术偏离表、大纲
+- `analysis/` — 技术需求分析、技术评分台账、实质性技术要求(否决项)、技术偏离表、技术方案大纲
 - `architecture/` — 总体技术架构 + 图表
-- `chapters/` — 章纲
-- `sections/` — 正文章节
-- `review/` — 风险评估报告 + 评标专家评分表
-- `output/` — 最终合成投标书
+- `chapters/` — 技术章纲
+- `sections/` — 技术方案章节
+- `review/` — 技术风险评估报告 + 技术评标评分表
+- `output/` — 最终合成技术方案（technical-proposal.md）
 - `.agent/` — 状态追踪 + agent 通信
-- `.claude/knowledge/` — 评分方法论、格式规范、案例库、反 AI 规则
+- `.claude/knowledge/` — 技术评分方法论、格式规范、案例库、反 AI 规则
 - `.claude/memory/` — 撰写动态记忆（RLHF：作者反馈沉淀）
 
 **工作流：** intake → analysis → architecture → drafting（检索→撰写）→ review → scoring（低分自动重写）→ compose → archive
@@ -286,7 +288,7 @@ def write_status(project_path: Path, bid_type: str):
 - **rewrite_round:** 0
 - **last_score:**
 - **last_archived:**
-- **next_task:** 把招标文件放入 tender/ 目录，确认后由 analyst 解析
+- **next_task:** 把招标文件放入 tender/ 目录，确认后由 analyst 解析技术部分
 """
     (project_path / ".agent" / "status.md").write_text(status, encoding="utf-8")
 
