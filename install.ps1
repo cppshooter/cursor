@@ -1,8 +1,4 @@
-# Bid Agent Skill Windows 安装脚本
-#
-# awesome-bid-skill - AI-assisted bid/tender document writing workflow system
-# 技术路线参照 awesome-novel-skill（GPL-3.0）的 Agent Skill 架构
-
+[CmdletBinding()]
 param(
     [Parameter(Position = 0)]
     [string]$Platform
@@ -12,8 +8,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 function Show-Usage {
-    Write-Host "用法: .\install.ps1 <平台>"
-    Write-Host "平台: claude-code, hermes, openclaw, deepseek-tui"
+    Write-Host "Usage: .\install.ps1 <platform>"
+    Write-Host "Platforms: claude-code, hermes, openclaw, deepseek-tui"
     exit 1
 }
 
@@ -21,47 +17,78 @@ if ([string]::IsNullOrWhiteSpace($Platform)) {
     Show-Usage
 }
 
+$userHome = [Environment]::GetFolderPath("UserProfile")
+
 switch ($Platform) {
-    "claude-code" {
-        $SkillsDir = Join-Path $HOME ".claude\skills"
-    }
-    "hermes" {
-        $SkillsDir = Join-Path $HOME ".hermes\skills"
-    }
-    "openclaw" {
-        $SkillsDir = Join-Path $HOME ".openclaw\skills"
-    }
-    "deepseek-tui" {
-        $SkillsDir = Join-Path $HOME ".deepseek\skills"
-    }
+    "claude-code" { $skillsDir = Join-Path $userHome ".claude\skills" }
+    "hermes" { $skillsDir = Join-Path $userHome ".hermes\skills" }
+    "openclaw" { $skillsDir = Join-Path $userHome ".openclaw\skills" }
+    "deepseek-tui" { $skillsDir = Join-Path $userHome ".deepseek\skills" }
     default {
-        Write-Host "不支持的平台: $Platform"
+        Write-Host "Unsupported platform: $Platform"
         Show-Usage
     }
 }
 
-$Dest = Join-Path $SkillsDir "awesome-bid"
-$ScriptDir = $PSScriptRoot
-if ([string]::IsNullOrWhiteSpace($ScriptDir)) {
-    $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$dest = Join-Path $skillsDir "awesome-bid"
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$rootPath = [System.IO.Path]::GetPathRoot($dest)
+
+Write-Host "Installing to: $dest"
+
+# Set the variable for the current session and future sessions.
+$env:BID_SKILL_HOME = $dest
+[Environment]::SetEnvironmentVariable("BID_SKILL_HOME", $dest, "User")
+Write-Host "Saved user environment variable BID_SKILL_HOME=$dest"
+
+# Also add the variable to common PowerShell profiles.
+$profilePaths = @(
+    $PROFILE.CurrentUserCurrentHost,
+    $PROFILE.CurrentUserAllHosts
+) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) } | Sort-Object -Unique
+
+$escapedDest = $dest.Replace("'", "''")
+$profileLine = '$env:BID_SKILL_HOME = ''{0}''' -f $escapedDest
+
+foreach ($profilePath in $profilePaths) {
+    $profileDir = Split-Path -Parent $profilePath
+
+    try {
+        if (-not [string]::IsNullOrWhiteSpace($profileDir) -and -not (Test-Path $profileDir)) {
+            [System.IO.Directory]::CreateDirectory($profileDir) | Out-Null
+        }
+
+        if (-not (Test-Path $profilePath)) {
+            New-Item -ItemType File -Path $profilePath -Force | Out-Null
+        }
+
+        $hasSetting = Select-String -Path $profilePath -Pattern "BID_SKILL_HOME" -Quiet -ErrorAction SilentlyContinue
+        if (-not $hasSetting) {
+            Add-Content -Path $profilePath -Value $profileLine
+            Write-Host "Added BID_SKILL_HOME=$dest to $profilePath"
+        }
+    }
+    catch {
+        Write-Warning "Skipped PowerShell profile update: $profilePath. $_"
+    }
 }
 
-Write-Host "安装到: $Dest"
-$env:BID_SKILL_HOME = $Dest
-[Environment]::SetEnvironmentVariable('BID_SKILL_HOME', $Dest, 'User')
-Write-Host "已设置用户环境变量 BID_SKILL_HOME=$Dest"
-
-# 安全检查：Dest 不能为空、不能是根目录、路径中必须包含 awesome-bid
-if (
-    [string]::IsNullOrWhiteSpace($Dest) -or
-    $Dest -eq [System.IO.Path]::GetPathRoot($Dest) -or
-    $Dest -notlike '*awesome-bid*'
-) {
-    Write-Error "错误：安装目标路径异常 ($Dest)，中止。"
+# Safety checks.
+if ([string]::IsNullOrWhiteSpace($dest) -or
+    $dest.TrimEnd('\') -eq $rootPath.TrimEnd('\') -or
+    $dest -notlike "*awesome-bid*") {
+    Write-Host "Error: invalid install target ($dest). Aborting."
     exit 1
 }
 
-$RuntimeItems = @(
+# Recreate the skill directory.
+if (Test-Path $dest) {
+    Remove-Item -Path $dest -Recurse -Force
+}
+New-Item -ItemType Directory -Path $dest -Force | Out-Null
+
+# Copy runtime files only.
+$copyItems = @(
     "SKILL.md",
     "agents",
     "skills",
@@ -71,27 +98,15 @@ $RuntimeItems = @(
     "tools"
 )
 
-# 校验安装源完整性，避免删除旧安装后才发现源文件缺失
-foreach ($Item in $RuntimeItems) {
-    $Source = Join-Path $ScriptDir $Item
-    if (-not (Test-Path -LiteralPath $Source)) {
-        Write-Error "错误：缺少安装源文件或目录: $Source"
-        exit 1
+foreach ($item in $copyItems) {
+    $source = Join-Path $scriptDir $item
+    if (-not (Test-Path $source)) {
+        throw "Missing install source file or directory: $source"
     }
+
+    Copy-Item -Path $source -Destination $dest -Recurse -Force
 }
 
-# 创建技能目录，已存在则清空
-if (Test-Path -LiteralPath $Dest) {
-    Remove-Item -LiteralPath $Dest -Recurse -Force
-}
-New-Item -ItemType Directory -Path $Dest -Force | Out-Null
-
-# 只复制运行时需要的文件
-foreach ($Item in $RuntimeItems) {
-    $Source = Join-Path $ScriptDir $Item
-    Copy-Item -LiteralPath $Source -Destination $Dest -Recurse -Force
-}
-
-$InitScript = Join-Path $Dest "tools\init.py"
-Write-Host "安装完成!"
-Write-Host "在投标项目目录运行: python `"$InitScript`" [project-path] [--type <1-4>]"
+Write-Host "Install complete!"
+$initPath = Join-Path $dest "tools\init.py"
+Write-Host ('Run in your bid project directory: python "{0}" [project-path] [--type <1-4>]' -f $initPath)
